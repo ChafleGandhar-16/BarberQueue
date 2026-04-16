@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Find a Barber Shop — BarberQueue</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <!-- Lucide icons -->
+  <script src="https://unpkg.com/lucide@0.258.0/dist/lucide.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#22395a",
+            secondary: "#466ab3",
+            accent: "#14b7cc",
+            "background-light": "#f4f7fc",
+            "background-dark": "#0f1724",
+            "card-light": "#ffffffcc",
+            "card-dark": "#0b1220cc",
+            success: "#29c785",
+            danger: "#e74c3c"
+          },
+          fontFamily: { display: "Inter, sans-serif" },
+          boxShadow: {
+            "soft-glow": "0 10px 30px rgba(34,57,90,0.08), 0 4px 6px rgba(0,0,0,0.04)",
+            "soft-glow-dark": "0 10px 30px rgba(34,57,90,0.18), 0 4px 6px rgba(0,0,0,0.4)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: Playfair Display, sans-serif; }
+    .glass { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .fade-up { transform: translateY(10px); opacity: 0; animation: fadeUp .45s ease forwards; }
+    @keyframes fadeUp { to { transform: translateY(0); opacity: 1; } }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-background-light to-white dark:from-background-dark dark:to-primary min-h-screen text-gray-800 dark:text-gray-200">
+
+  <!-- Header (centered like your screenshot) -->
+  <!-- <header class="px-6 pt-8 pb-4">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-center tracking-tight text-primary dark:text-white">BarberQueue</h1>
+  </header> -->
+
+  <header class="px-6 pt-8 pb-4 flex justify-center items-center relative">
+    <h1 class="text-3xl md:text-4xl font-extrabold text-center tracking-tight text-primary dark:text-white">BarberQueue</h1>
+    
+    <button id="theme-toggle" class="absolute right-6 top-8 p-3 rounded-full bg-card-light dark:bg-card-dark shadow-soft-glow dark:shadow-soft-glow-dark border border-gray-200/40 dark:border-gray-700/40 transition hover:scale-105">
+      <svg data-lucide="sun" id="theme-icon" class="w-5 h-5 text-gray-700 dark:text-gray-300"></svg>
+    </button>
+  </header>
+
+  <main class="px-6 pb-16 max-w-6xl mx-auto">
+
+    <!-- Action Cards Row -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <!-- Check Status -->
+      <div class="glass bg-card-light/80 dark:bg-card-dark/80 rounded-2xl p-6 shadow-soft-glow dark:shadow-soft-glow-dark border border-gray-200/40 dark:border-gray-700/40">
+        <h3 class="text-lg font-semibold mb-4 text-primary dark:text-white">Check Your Queue Status</h3>
+        <form id="statusForm" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input id="statusName" type="text" class="p-3 rounded-xl bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50 md:col-span-1" placeholder="Your name (optional)" />
+          <input id="statusPhone" type="tel" class="p-3 rounded-xl bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50 md:col-span-1" placeholder="Phone number" required />
+          <button type="submit" class="p-3 rounded-xl bg-primary text-white font-semibold hover:scale-[1.02] transition md:col-span-1">Check</button>
+          <div id="statusResult" class="md:col-span-3 text-sm mt-1"></div>
+        </form>
+      </div>
+
+      <!-- Cancel Entry -->
+      <div class="glass bg-card-light/80 dark:bg-card-dark/80 rounded-2xl p-6 shadow-soft-glow dark:shadow-soft-glow-dark border border-gray-200/30 dark:border-gray-700/50">
+        <div class="flex items-center gap-3">
+          <div class="p-3 rounded-lg bg-danger/10 text-danger">
+            <svg data-lucide="x-circle" class="w-5 h-5"></svg>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold">Cancel Your Queue Entry</h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Leave any queue using your phone number</p>
+          </div>
+        </div>
+
+        <form id="exitForm" class="mt-4 grid grid-cols-3 gap-3">
+          <input id="exitPhone" type="tel" class="col-span-2 p-3 rounded-xl bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50" placeholder="Phone number" required />
+          <button type="submit" class="col-span-1 p-3 rounded-xl bg-danger text-white font-semibold hover:scale-[1.02] transition">Exit</button>
+          <div id="exitResult" class="col-span-3 mt-2 text-sm"></div>
+          <!-- <div id="exitConfirmError"></div> -->
+        </form>
+      </div>
+    </section>
+
+    <!-- Find a Barbershop -->
+    <section class="mb-3">
+      <h3 class="text-xl font-semibold text-primary dark:text-white mb-3">Find a Barbershop</h3>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <input id="shopSearch" type="text" class="p-3 rounded-xl bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50 md:col-span-2" placeholder="Enter shop name" />
+        <select id="citySearch" class="p-3 rounded-xl bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50">
+          <option value="">All Cities</option>
+          <option>Ahmednagar</option><option>Akola</option><option>Amravati</option><option>Aurangabad</option>
+          <option>Beed</option><option>Bhandara</option><option>Buldhana</option><option>Chandrapur</option>
+          <option>Dhule</option><option>Gadchiroli</option><option>Gondia</option><option>Hingoli</option>
+          <option>Jalgaon</option><option>Jalna</option><option>Kolhapur</option><option>Latur</option>
+          <option>Mumbai City</option><option>Mumbai Suburban</option><option>Nagpur</option><option>Nanded</option>
+          <option>Nandurbar</option><option>Nashik</option><option>Osmanabad</option><option>Palghar</option>
+          <option>Parbhani</option><option>Pune</option><option>Raigad</option><option>Ratnagiri</option>
+          <option>Sangli</option><option>Satara</option><option>Sindhudurg</option><option>Solapur</option>
+          <option>Thane</option><option>Wardha</option><option>Washim</option><option>Yavatmal</option>
+        </select>
+        <button id="searchBtn" class="p-3 rounded-xl bg-secondary text-white font-semibold hover:scale-[1.02] transition">Search</button>
+      </div>
+    </section>
+
+    <!-- Results -->
+    <section>
+      <div id="shop-list" class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4"></div>
+    </section>
+  </main>
+
+  <!-- Join Queue Modal -->
+  <div id="queueModal" class="fixed inset-0 z-50 hidden items-center justify-center backdrop-blur-xl bg-white/10">
+    <div class="bg-card-light/95 dark:bg-card-dark/95 glass rounded-2xl p-6 w-full max-w-md shadow-soft-glow dark:shadow-soft-glow-dark border border-gray-200/30 dark:border-gray-700/50">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="p-2 rounded-lg bg-primary text-white">
+          <svg data-lucide="user-plus" class="w-5 h-5"></svg>
+        </div>
+        <h4 class="text-lg font-semibold">Join Queue</h4>
+      </div>
+
+      <form id="queueForm" class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">Your Name</label>
+          <input id="custName" type="text" class="w-full p-3 rounded-lg bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Phone Number</label>
+          <input id="custPhone" type="tel" class="w-full p-3 rounded-lg bg-white/60 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-700/50" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">Services</label>
+          <div id="serviceContainer" class="space-y-2 max-h-36 overflow-auto p-2 rounded-md bg-white/40 dark:bg-gray-800/40 border border-gray-200/20"></div>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" id="cancelJoin" class="px-4 py-2 rounded-lg bg-gray-300 dark:bg-gray-700">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-success text-white font-semibold">Join</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Exit Confirmation Modal (gradient header + blurred translucent backdrop) -->
+  <div id="exitConfirmModal" class="fixed inset-0 z-50 hidden items-center justify-center backdrop-blur-xl bg-white/10">
+    <div class="w-full max-w-md rounded-2xl overflow-hidden shadow-soft-glow dark:shadow-soft-glow-dark border border-gray-200/30 dark:border-gray-700/50 glass">
+      <!-- Gradient header -->
+      <div class="bg-gradient-to-r from-primary to-accent text-white px-5 py-4 flex items-center gap-3">
+        <svg data-lucide="alert-triangle" class="w-5 h-5"></svg>
+        <h4 class="text-lg font-semibold">Confirm Exit</h4>
+      </div>
+      <!-- Body -->
+      <div class="bg-card-light/95 dark:bg-card-dark/95 px-5 py-4">
+        <p class="mb-2">Are you sure you want to exit the queue of <span id="exitShopName" class="font-semibold"></span>?</p>
+        <ul class="text-sm space-y-1">
+          <li>👥 Customers ahead: <span id="exitCustomersAhead" class="font-semibold"></span></li>
+          <li>⏱ ETA: <span id="exitEta" class="font-semibold"></span> min</li>
+        </ul>
+        <div id="exitConfirmError" class="text-sm text-danger mt-2"></div>
+        <div class="flex justify-end gap-3 mt-5">
+          <button id="cancelExitBtn" class="px-4 py-2 rounded-lg bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100">Cancel</button>
+          <button id="confirmExitBtn" class="px-4 py-2 rounded-lg bg-danger text-white font-semibold">Yes, Exit Queue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase + App Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import {
+      getFirestore, collection, getDocs, query, orderBy, doc, getDoc, setDoc, deleteDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Elements
+    const shopSearch = document.getElementById("shopSearch");
+    const citySearch = document.getElementById("citySearch");
+    const searchBtn = document.getElementById("searchBtn");
+    const shopList = document.getElementById("shop-list");
+
+    const queueModal = document.getElementById("queueModal");
+    const queueForm = document.getElementById("queueForm");
+    const custNameInput = document.getElementById("custName");
+    const custPhoneInput = document.getElementById("custPhone");
+    const svcContainer = document.getElementById("serviceContainer");
+    const cancelJoin = document.getElementById("cancelJoin");
+
+    const statusForm = document.getElementById("statusForm");
+    const statusPhone = document.getElementById("statusPhone");
+    const statusResult = document.getElementById("statusResult");
+
+    const exitForm = document.getElementById("exitForm");
+    const exitPhone = document.getElementById("exitPhone");
+    const exitResult = document.getElementById("exitResult");
+    const exitConfirmModal = document.getElementById("exitConfirmModal");
+    const exitShopNameEl = document.getElementById("exitShopName");
+    const exitCustomersAheadEl = document.getElementById("exitCustomersAhead");
+    const exitEtaEl = document.getElementById("exitEta");
+    const cancelExitBtn = document.getElementById("cancelExitBtn");
+    const confirmExitBtn = document.getElementById("confirmExitBtn");
+    const exitConfirmError = document.getElementById("exitConfirmError"); 
+
+    // runtime state for exit confirmation
+    let pendingExit = { shopId: null, phone: null };
+
+    // Helpers
+    function show(el) { el.classList.remove("hidden"); el.classList.add("flex"); }
+    function hide(el) { el.classList.remove("flex"); el.classList.add("hidden"); }
+    function slugify(str) { return String(str).toLowerCase().replace(/[^\w]+/g, "-"); }
+    function escapeHtml(str) {
+      if (!str && str !== 0) return "";
+      return String(str).replace(/[&<>"'`=\/]/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#x2F;','`':'&#x60;','=':'&#x3D;'}[s]));
+    }
+    function getNow() {
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2,"0")}:${String(now.getMinutes()).padStart(2,"0")}`;
+      const dayStr = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][now.getDay()];
+      return { timeStr, dayStr };
+    }
+    // Gemini Code: Add this function near the top of your Firebase + App Logic section
+    /**
+     * Checks if a given phone number is already in any shop's queue.
+     * @param {string} phone - The phone number to check.
+     * @returns {Promise<{exists: boolean, shopName: string|null}>} - Object indicating existence and the shop name if found.
+     */
+    async function isCustomerInQueue(phone) {
+      const ownersSnap = await getDocs(collection(db, "owners"));
+
+      for (const shopDoc of ownersSnap.docs) {
+        // Reference to the customer document using the phone number as the document ID
+        const custRef = doc(db, `queues/${shopDoc.id}/customers`, phone);
+        const docSnap = await getDoc(custRef);
+
+        if (docSnap.exists()) {
+          // Found the customer in this shop's queue
+          return { 
+              exists: true, 
+              shopName: shopDoc.data().shopName || "an Unknown Shop" 
+          };
+        }
+      }
+      // Not found in any queue
+      return { exists: false, shopName: null };
+    }// Gemini code ends here
+
+    // INIT icons
+    document.addEventListener("DOMContentLoaded", () => { if (window.lucide) window.lucide.replace(); });
+
+    //Gemini code:
+    // --- NEW THEME TOGGLE LOGIC ---
+    const htmlEl = document.documentElement;
+    const toggleBtn = document.getElementById("theme-toggle");
+    const toggleIcon = document.getElementById("theme-icon");
+
+    function updateIcon(isDark) {
+      // Update Lucide icon based on current mode
+      toggleIcon.setAttribute('data-lucide', isDark ? 'moon' : 'sun');
+      if (window.lucide) window.lucide.replace(); // Re-render the icon
+    }
+
+    function loadTheme() {
+      const storedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      // Determine initial theme: stored preference > system preference > default (light)
+      let initialTheme = 'light';
+      if (storedTheme === 'dark' || (storedTheme === null && prefersDark)) {
+        initialTheme = 'dark';
+      }
+
+      if (initialTheme === 'dark') {
+        htmlEl.classList.add('dark');
+      } else {
+        htmlEl.classList.remove('dark');
+      }
+      updateIcon(initialTheme === 'dark');
+    }
+
+    function toggleTheme() {
+      const isDark = htmlEl.classList.toggle('dark');
+      const theme = isDark ? 'dark' : 'light';
+      localStorage.setItem('theme', theme);
+      updateIcon(isDark);
+    }
+
+    // 1. Load theme on page load
+    loadTheme();
+
+    // 2. Attach toggle functionality
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', toggleTheme);
+    }
+    // --- END NEW THEME TOGGLE LOGIC ---
+    //Gemini code ends here
+    
+    // SEARCH
+    searchBtn.addEventListener("click", async () => {
+      shopList.innerHTML = "";
+      const nameFilter = shopSearch.value.trim().toLowerCase();
+      const cityFilter = citySearch.value;
+      const snap = await getDocs(collection(db, "owners"));
+      const { timeStr, dayStr } = getNow();
+
+      for (const docSnap of snap.docs) {
+        const shop = docSnap.data();
+        const shopName = shop.shopName || "";
+        const city = shop.city || "";
+        const openDays = shop.openDays || [];
+        const openTime = shop.openTime || "00:00";
+        const closeTime = shop.closeTime || "23:59";
+        const services = shop.services || {};
+
+        if (cityFilter && city !== cityFilter) continue;
+        if (nameFilter) {
+          const words = nameFilter.split(/\s+/).filter(Boolean);
+          const match = words.some(w => shopName.toLowerCase().includes(w));
+          if (!match) continue;
+        }
+
+        const isOpen = openDays.includes(dayStr) && timeStr >= openTime && timeStr <= closeTime;
+
+        const qCustomers = query(collection(db, `queues/${docSnap.id}/customers`), orderBy("timestamp", "asc"));
+        const queueSnap = await getDocs(qCustomers);
+        const queueSize = queueSnap.size;
+        let totalETA = 0;
+        queueSnap.forEach(cust => {
+          const svcList = cust.data().services || [];
+          totalETA += svcList.reduce((sum, s) => sum + (services[s] || 0), 0);
+        });
+
+        const card = document.createElement("div");
+        card.className = "fade-up glass bg-card-light/80 dark:bg-card-dark/80 rounded-2xl p-6 shadow-soft-glow dark:shadow-soft-glow-dark border border-gray-200/40 dark:border-gray-700/40";
+        card.innerHTML = `
+          <h4 class="text-lg font-semibold text-primary dark:text-white">${escapeHtml(shopName)}</h4>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">City: ${escapeHtml(city)}</p>
+          <div class="mt-3 space-y-1 text-sm">
+            <p class="${isOpen ? 'text-success' : 'text-danger'}">${isOpen ? "● Open and Accepting" : "× Closed now"}</p>
+            <p class="text-gray-600 dark:text-gray-400">Queue: ${queueSize} customer(s)</p>
+            <p class="text-gray-600 dark:text-gray-400">ETA: ${totalETA} min</p>
+          </div>
+          <div class="mt-4">
+            <button class="enterQueueBtn w-full py-3 rounded-xl text-white font-semibold ${isOpen ? 'bg-accent hover:scale-[1.01]' : 'bg-gray-400 opacity-60 cursor-not-allowed'}"
+              data-id="${docSnap.id}" data-services='${JSON.stringify(services)}' ${isOpen ? '' : 'disabled'}>
+              Join Queue
+            </button>
+          </div>
+        `;
+        shopList.appendChild(card);
+      }
+
+      shopList.querySelectorAll(".enterQueueBtn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const shopId = btn.dataset.id;
+          const services = JSON.parse(btn.dataset.services || "{}");
+          svcContainer.innerHTML = "";
+          Object.entries(services).forEach(([name, mins]) => {
+            const id = `svc-${shopId}-${slugify(name)}`;
+            const row = document.createElement("label");
+            row.className = "flex items-center gap-2 p-2 rounded-md bg-white/40 dark:bg-gray-800/40";
+            row.innerHTML = `
+              <input class="h-4 w-4" type="checkbox" value="${escapeHtml(name)}" id="${id}" />
+              <span class="text-sm">${escapeHtml(name)} (${mins} min)</span>
+            `;
+            svcContainer.appendChild(row);
+          });
+          custNameInput.value = "";
+          custPhoneInput.value = "";
+          show(queueModal);
+          if (window.lucide) window.lucide.replace();
+        });
+      });
+
+      if (window.lucide) window.lucide.replace();
+    });
+
+    //Gemini code: REPLACE your existing queueForm.addEventListener with this:
+
+    // JOIN queue
+    queueForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = custNameInput.value.trim();
+      const phone = custPhoneInput.value.trim();
+      const chosen = Array.from(svcContainer.querySelectorAll("input:checked")).map(cb => cb.value);
+
+      if (!name || !phone || chosen.length === 0) { 
+        alert("Please provide name, phone & at least one service."); 
+        return; 
+      }
+
+      // --- NEW CHECK CONDITION ---
+      const checkResult = await isCustomerInQueue(phone);
+      if (checkResult.exists) {
+        alert(`Rejection: The phone number ${phone} is already in the queue at ${checkResult.shopName}. Please exit that queue first.`);
+        return; // Stop the function and reject the join attempt
+      }
+      // --- END NEW CHECK CONDITION ---
+
+      // If the check passes, proceed with joining the queue
+      try {
+        // Get the shop ID from one of the service checkboxes' IDs (this assumes your current logic is correct)
+        const shopId = svcContainer.querySelector("input")?.id.split("-")[1];
+        if (!shopId) {
+            alert("Error: Could not determine the shop ID.");
+            return;
+        }
+        
+        await setDoc(doc(db, "queues", shopId, "customers", phone), {
+          name, 
+          phone, 
+          services: chosen, 
+          timestamp: serverTimestamp()
+        });
+        
+        hide(queueModal);
+        alert("Joined queue successfully.");
+
+      } catch (err) {
+        alert("Error joining queue: " + err.message);
+      }
+    });//Gemini Code ends here
+
+    // // JOIN queue
+    // queueForm.addEventListener("submit", async (e) => {
+    //   e.preventDefault();
+    //   const name = custNameInput.value.trim();
+    //   const phone = custPhoneInput.value.trim();
+    //   const chosen = Array.from(svcContainer.querySelectorAll("input:checked")).map(cb => cb.value);
+    //   if (!name || !phone || chosen.length === 0) { alert("Please provide name, phone & at least one service."); return; }
+    //   try {
+    //     await setDoc(doc(db, "queues", /* selected in handler */ svcContainer.querySelector("input")?.id.split("-")[1], "customers", phone), {
+    //       name, phone, services: chosen, timestamp: serverTimestamp()
+    //     });
+    //     hide(queueModal);
+    //     alert("Joined queue successfully.");
+    //   } catch (err) {
+    //     alert("Error joining queue: " + err.message);
+    //   }
+    // });
+
+    // Close join modal
+    cancelJoin.addEventListener("click", () => hide(queueModal));
+    queueModal.addEventListener("click", (e) => { if (e.target === queueModal) hide(queueModal); });
+
+    // STATUS check
+    statusForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusResult.textContent = "Checking…";
+      const phone = statusPhone.value.trim();
+      const ownersSnap = await getDocs(collection(db, "owners"));
+      let found = false;
+
+      for (const shopDoc of ownersSnap.docs) {
+        const qCustomers = query(collection(db, `queues/${shopDoc.id}/customers`), orderBy("timestamp", "asc"));
+        const queueSnap = await getDocs(qCustomers);
+        const queue = queueSnap.docs; // ordered by timestamp asc
+        const index = queue.findIndex(d => d.id === phone);
+        if (index !== -1) {
+          const customer = queue[index].data();
+          const shopServices = shopDoc.data().services || {};
+          const eta = queue.slice(0, index).reduce((sum, d) => {
+            const svc = d.data().services || [];
+            return sum + svc.reduce((s, x) => s + (shopServices[x] || 0), 0);
+          }, 0);
+          statusResult.innerHTML = `<span class="text-success">✅ ${escapeHtml(customer.name || "You")}, you're #${index + 1} in queue at ${escapeHtml(shopDoc.data().shopName)}. ETA: ${eta} min.</span>`;
+          found = true;
+          break;
+        }
+      }
+      if (!found) statusResult.innerHTML = `<span class="text-danger">❌ You are not in any queue.</span>`;
+    });
+    
+    // Exit flow
+    exitForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      exitResult.textContent = "Checking…";
+      const phone = exitPhone.value.trim();
+      if (!phone) {
+        exitResult.innerHTML = `<span class="text-danger">❌ Please enter a phone number.</span>`;
+        return;
+      }
+
+      try {
+        const ownersSnap = await getDocs(collection(db, "owners"));
+        let foundContext = null;
+
+        for (const shopDoc of ownersSnap.docs) {
+          const shopId = shopDoc.id;
+          const shopData = shopDoc.data();
+          const qCustomers = query(collection(db, `queues/${shopId}/customers`), orderBy("timestamp", "asc"));
+          const queueSnap = await getDocs(qCustomers);
+          const queue = queueSnap.docs;
+          const index = queue.findIndex(d => d.id === phone);
+          if (index !== -1) {
+            const shopServices = shopData.services || {};
+            const ahead = index;
+            const eta = queue.slice(0, index).reduce((sum, d) => {
+              const svc = d.data().services || [];
+              return sum + svc.reduce((s, x) => s + (shopServices[x] || 0), 0);
+            }, 0);
+            foundContext = { shopId, shopName: shopData.shopName || "Unknown Shop", ahead, eta, phone };
+            break;
+          }
+        }
+
+        if (!foundContext) {
+          exitResult.innerHTML = `<span class="text-danger">❌ You are not in any queue.</span>`;
+          return;
+        }
+
+        pendingExit = { shopId: foundContext.shopId, phone: foundContext.phone };
+        exitShopNameEl.textContent = foundContext.shopName;
+        exitCustomersAheadEl.textContent = String(foundContext.ahead);
+        exitEtaEl.textContent = String(foundContext.eta);
+        exitConfirmError.textContent = "";
+        show(exitConfirmModal);
+        if (window.lucide) window.lucide.replace();
+        exitResult.textContent = "";
+      } catch (err) {
+        exitResult.innerHTML = `<span class="text-danger">Error checking queue: ${err.message}</span>`;
+      }
+    });
+
+    // Confirm exit
+    confirmExitBtn.addEventListener("click", async () => {
+      if (!pendingExit.shopId || !pendingExit.phone) return;
+      try {
+        const custRef = doc(db, "queues", pendingExit.shopId, "customers", pendingExit.phone);
+        const docSnap = await getDoc(custRef);
+        if (docSnap.exists()) {
+          await deleteDoc(custRef);
+          hide(exitConfirmModal);
+          exitResult.innerHTML = `<span class="text-success">✅ You’ve left the queue successfully.</span>`;
+        } else {
+          hide(exitConfirmModal);
+          exitResult.innerHTML = `<span class="text-danger">❌ You are not in any queue.</span>`;
+        }
+        pendingExit = { shopId: null, phone: null };
+      } catch (err) {
+        exitConfirmError.textContent = "Error: " + err.message;
+      }
+    });
+
+    // Cancel exit
+    cancelExitBtn.addEventListener("click", () => {
+      hide(exitConfirmModal);
+      pendingExit = { shopId: null, phone: null };
+    });
+
+    // Backdrop click close
+    exitConfirmModal.addEventListener("click", (e) => {
+      if (e.target === exitConfirmModal) {
+        hide(exitConfirmModal);
+        pendingExit = { shopId: null, phone: null };
+      }
+    });
+  </script>
+</body>
+</html>

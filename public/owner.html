@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Owner Dashboard</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#22395a",
+            secondary: "#466ab3",
+            accent: "#14b7cc",
+            success: "#29c785",
+            danger: "#e74c3c",
+            "background-light": "#f0f2f5",
+            "background-dark": "#182137",
+            "card-light": "#ffffffcc",
+            "card-dark": "#1e293bcc",
+          },
+          fontFamily: { display: "Playfair Display" },
+          boxShadow: {
+            "soft-glow": "0 10px 25px rgba(34, 57, 90, 0.1), 0 4px 6px rgba(0,0,0,0.05)",
+            "soft-glow-dark": "0 10px 25px rgba(34, 57, 90, 0.25), 0 4px 6px rgba(0,0,0,0.3)",
+          },
+        },
+      },
+    };
+  </script>
+</head>
+
+<body class="bg-gradient-to-br from-background-light to-white dark:from-background-dark dark:to-primary-dark text-gray-800 dark:text-gray-200 font-display min-h-screen">
+
+  <!-- Header -->
+  <header class="flex justify-between items-center px-6 py-4 shadow-soft-glow dark:shadow-soft-glow-dark bg-card-light/70 dark:bg-card-dark/70 backdrop-blur-md border-b border-gray-200/30 dark:border-gray-700/50">
+    <h1 class="text-3xl font-bold text-primary dark:text-white">My Shop Dashboard</h1>
+    <div class="space-x-2">
+      <button id="editShopBtn" class="px-4 py-2 rounded-lg bg-accent text-white font-semibold hover:bg-secondary transition-transform hover:scale-105">Edit Shop</button>
+      <button id="signOutBtn" class="px-4 py-2 rounded-lg bg-danger text-white font-semibold hover:bg-red-700 transition-transform hover:scale-105">Sign Out</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="p-6 space-y-6">
+
+    <!-- Shop Info -->
+    <div class="bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-md rounded-2xl shadow-soft-glow dark:shadow-soft-glow-dark p-6 border border-gray-200/30 dark:border-gray-700/50 transition-transform hover:scale-[1.01]">
+      <h2 class="text-2xl font-bold text-primary dark:text-white mb-3">Shop Information</h2>
+      <p><strong>Shop Name:</strong> <span id="shopName" class="font-medium text-accent"></span></p>
+      <p><strong>Location:</strong> <span id="shopLocation"></span></p>
+      <p class="mt-2"><strong>Services:</strong></p>
+      <ul id="serviceList" class="list-disc pl-5 space-y-1"></ul>
+
+      <div class="mt-4 flex items-center gap-3">
+        <button id="toggleAccepting" class="px-4 py-2 rounded-lg bg-secondary text-white hover:bg-primary transition-transform hover:scale-105">Toggle Accepting</button>
+        <span id="acceptingStatus" class="px-3 py-1 rounded-full bg-success text-white text-sm font-semibold">Accepting</span>
+      </div>
+    </div>
+
+    <!-- Queue Table -->
+    <div class="bg-card-light/80 dark:bg-card-dark/80 backdrop-blur-md rounded-2xl shadow-soft-glow dark:shadow-soft-glow-dark p-6 border border-gray-200/30 dark:border-gray-700/50 transition-transform hover:scale-[1.01]">
+      <h3 class="text-xl font-bold text-primary dark:text-white mb-3">Current Queue</h3>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm text-left border-collapse">
+          <thead class="text-accent border-b border-gray-300 dark:border-gray-600">
+            <tr>
+              <th class="py-2 px-3">#</th>
+              <th class="py-2 px-3">Name</th>
+              <th class="py-2 px-3">Phone</th>
+              <th class="py-2 px-3">Services</th>
+              <th class="py-2 px-3">ETA (min)</th>
+              <th class="py-2 px-3">Action</th>
+            </tr>
+          </thead>
+          <tbody id="queueTable" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Edit Modal -->
+  <div id="editShopModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+    <div class="bg-card-light dark:bg-card-dark p-6 rounded-2xl shadow-lg max-w-2xl w-full border border-gray-200/30 dark:border-gray-700/50">
+      <h3 class="text-2xl font-semibold text-primary dark:text-white mb-4">Edit Shop Settings</h3>
+      <form id="editShopForm" class="space-y-4">
+
+        <div>
+          <label class="block mb-1 font-semibold">Shop Name</label>
+          <input type="text" id="editShopName" class="w-full p-3 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50" required />
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block mb-1 font-semibold">Opening Time</label>
+            <input type="time" id="editOpenTime" class="w-full p-3 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50" required />
+          </div>
+          <div>
+            <label class="block mb-1 font-semibold">Closing Time</label>
+            <input type="time" id="editCloseTime" class="w-full p-3 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50" required />
+          </div>
+        </div>
+
+        <div>
+          <label class="block mb-1 font-semibold">Open Days</label>
+          <div id="editDays" class="flex flex-wrap gap-3">
+            <label><input type="checkbox" value="Mon" /> Mon</label>
+            <label><input type="checkbox" value="Tue" /> Tue</label>
+            <label><input type="checkbox" value="Wed" /> Wed</label>
+            <label><input type="checkbox" value="Thu" /> Thu</label>
+            <label><input type="checkbox" value="Fri" /> Fri</label>
+            <label><input type="checkbox" value="Sat" /> Sat</label>
+            <label><input type="checkbox" value="Sun" /> Sun</label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block mb-1 font-semibold">Services & Duration (min)</label>
+          <div id="editServiceList" class="space-y-2"></div>
+          <button type="button" id="addEditService" class="mt-2 text-accent font-semibold hover:text-secondary">+ Add Service</button>
+        </div>
+
+        <p id="editMessage" class="text-danger"></p>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-gray-200/30 dark:border-gray-700/50">
+          <button type="button" id="closeModal" class="px-4 py-2 bg-gray-400/60 dark:bg-gray-600 rounded-lg text-white hover:bg-gray-500">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-success rounded-lg text-white font-semibold hover:bg-green-600">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase Logic -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc, collection,
+      query, orderBy, onSnapshot, deleteDoc
+    } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const shopNameEl = document.getElementById("shopName");
+    const shopLocationEl = document.getElementById("shopLocation");
+    const serviceListEl = document.getElementById("serviceList");
+    const queueTable = document.getElementById("queueTable");
+    const toggleBtn = document.getElementById("toggleAccepting");
+    const acceptingStatus = document.getElementById("acceptingStatus");
+    const signOutBtn = document.getElementById("signOutBtn");
+    const editShopBtn = document.getElementById("editShopBtn");
+    const editModal = document.getElementById("editShopModal");
+    const closeModal = document.getElementById("closeModal");
+    const editForm = document.getElementById("editShopForm");
+    const editServiceList = document.getElementById("editServiceList");
+    const addEditService = document.getElementById("addEditService");
+    const editMessage = document.getElementById("editMessage");
+
+    let ownerId = null;
+    let services = {};
+    let accepting = true;
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "auth.html";
+        return;
+      }
+      ownerId = user.uid;
+
+      const shopDoc = await getDoc(doc(db, "owners", ownerId));
+      if (!shopDoc.exists()) {
+        window.location.href = "setup.html";
+        return;
+      }
+      loadShop(shopDoc.data());
+
+      const q = query(collection(db, `queues/${ownerId}/customers`), orderBy("timestamp", "asc"));
+      onSnapshot(q, (snapshot) => {
+        queueTable.innerHTML = "";
+        let count = 1;
+        let cumulativeTime = 0;
+        snapshot.forEach(docSnap => {
+          const c = docSnap.data();
+          const row = document.createElement("tr");
+          const totalServiceTime = (c.services || []).reduce((sum, svc) => sum + (services[svc] || 0), 0);
+          cumulativeTime += totalServiceTime;
+          row.innerHTML = `
+            <td class="py-2 px-3">${count++}</td>
+            <td class="py-2 px-3">${c.name}</td>
+            <td class="py-2 px-3">${c.phone}</td>
+            <td class="py-2 px-3">${(c.services || []).join(", ")}</td>
+            <td class="py-2 px-3">${cumulativeTime}</td>
+            <td class="py-2 px-3">
+              <button class="serveBtn px-3 py-1 bg-success text-white rounded-md hover:bg-green-600" data-id="${docSnap.id}">Serve</button>
+            </td>
+          `;
+          queueTable.appendChild(row);
+        });
+
+        document.querySelectorAll(".serveBtn").forEach(btn => {
+          btn.addEventListener("click", async (e) => {
+            const id = e.target.getAttribute("data-id");
+            await deleteDoc(doc(db, `queues/${ownerId}/customers`, id));
+          });
+        });
+      });
+    });
+
+    function loadShop(data) {
+      shopNameEl.textContent = data.shopName;
+      shopLocationEl.textContent = data.city;
+      services = data.services || {};
+      accepting = data.acceptingCustomers;
+      acceptingStatus.textContent = accepting ? "Accepting" : "Closed";
+      acceptingStatus.className = `px-3 py-1 rounded-full text-sm font-semibold ${accepting ? "bg-success" : "bg-gray-500"}`;
+
+      serviceListEl.innerHTML = "";
+      Object.entries(services).forEach(([name, mins]) => {
+        const li = document.createElement("li");
+        li.textContent = `${name} — ${mins} min`;
+        serviceListEl.appendChild(li);
+      });
+    }
+
+    toggleBtn.addEventListener("click", async () => {
+      accepting = !accepting;
+      await updateDoc(doc(db, "owners", ownerId), { acceptingCustomers: accepting });
+      acceptingStatus.textContent = accepting ? "Accepting" : "Closed";
+      acceptingStatus.className = `px-3 py-1 rounded-full text-sm font-semibold ${accepting ? "bg-success" : "bg-gray-500"}`;
+    });
+
+    signOutBtn.addEventListener("click", async () => {
+      await signOut(auth);
+      window.location.href = "auth.html";
+    });
+
+    editShopBtn.addEventListener("click", async () => {
+      const shopDoc = await getDoc(doc(db, "owners", ownerId));
+      const data = shopDoc.data();
+
+      document.getElementById("editShopName").value = data.shopName;
+      document.getElementById("editOpenTime").value = data.openTime;
+      document.getElementById("editCloseTime").value = data.closeTime;
+
+      document.querySelectorAll("#editDays input").forEach(cb => {
+        cb.checked = data.openDays.includes(cb.value);
+      });
+
+      editServiceList.innerHTML = "";
+      Object.entries(data.services || {}).forEach(([name, mins]) => {
+        const row = document.createElement("div");
+        row.className = "grid grid-cols-2 gap-2";
+        row.innerHTML = `
+          <input type="text" class="p-2 rounded-md bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50 edit-service-name" value="${name}" />
+          <input type="number" class="p-2 rounded-md bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50 edit-service-time" value="${mins}" />
+        `;
+        editServiceList.appendChild(row);
+      });
+
+      editModal.classList.remove("hidden");
+    });
+
+    addEditService.addEventListener("click", () => {
+      const row = document.createElement("div");
+      row.className = "grid grid-cols-2 gap-2";
+      row.innerHTML = `
+        <input type="text" placeholder="Service Name" class="p-2 rounded-md bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50 edit-service-name" />
+        <input type="number" placeholder="Time (min)" class="p-2 rounded-md bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50 edit-service-time" />
+      `;
+      editServiceList.appendChild(row);
+    });
+
+    closeModal.addEventListener("click", () => editModal.classList.add("hidden"));
+
+    editForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      editMessage.textContent = "";
+
+      const shopName = document.getElementById("editShopName").value.trim();
+      const openTime = document.getElementById("editOpenTime").value;
+      const closeTime = document.getElementById("editCloseTime").value;
+      const openDays = Array.from(document.querySelectorAll("#editDays input:checked")).map(cb => cb.value);
+
+      const serviceNames = document.querySelectorAll(".edit-service-name");
+      const serviceTimes = document.querySelectorAll(".edit-service-time");
+      const newServices = {};
+      serviceNames.forEach((input, i) => {
+        const name = input.value.trim();
+        const time = parseInt(serviceTimes[i].value);
+        if (name && time > 0) newServices[name] = time;
+      });
+
+      try {
+        await updateDoc(doc(db, "owners", ownerId), {
+          shopName, openTime, closeTime, openDays, services: newServices
+        });
+        editModal.classList.add("hidden");
+        const updatedDoc = await getDoc(doc(db, "owners", ownerId));
+        loadShop(updatedDoc.data());
+      } catch (err) {
+        editMessage.textContent = "Error saving changes: " + err.message;
+      }
+    });
+  </script>
+</body>
+</html>

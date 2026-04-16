@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clipper Login</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            primary: "#22395a", // Deep professional blue
+            "primary-dark": "#182137", // Darker variant for depth
+            secondary: "#466ab3", // Lighter blue for accents/hovers
+            accent: "#14b7cc", // Cyan for highlights and focus
+            "background-light": "#f0f2f5", // Soft light background
+            "background-dark": "#182137", // Deep dark background
+            "card-light": "#ffffff", // Clean white for light cards
+            "card-dark": "#1e293b", // Subtle dark for cards
+            success: "#29c785", // Green for success states
+            danger: "#e74c3c", // Red for errors
+            gray: "#7a8ca7", // Neutral gray for text/labels
+            "gray-light": "#b8c1d4" // Lighter gray for placeholders
+          },
+          fontFamily: {
+            display: "Playfair Display"
+          },
+          animation: {
+            fadeIn: 'fadeIn 2s ease-in-out forwards',
+            pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            "slide-up": 'slideUp 0.5s ease-out forwards'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '0.15' }, // Subtle for professional backdrop
+            },
+            slideUp: {
+              '0%': { transform: 'translateY(10px)', opacity: '0' },
+              '100%': { transform: 'translateY(0)', opacity: '1' }
+            }
+          },
+          boxShadow: {
+            "soft-glow": "0 10px 25px rgba(34, 57, 90, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05)",
+            "soft-glow-dark": "0 10px 25px rgba(34, 57, 90, 0.15), 0 4px 6px rgba(0, 0, 0, 0.3)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .loading-spinner {
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      width: 1rem;
+      height: 1rem;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Enhanced focus styles using accent color */
+    .form-input:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(20, 183, 204, 0.2), 0 0 0 1px #14b7cc;
+      transform: translateY(-1px);
+      /* Subtle lift for engagement */
+    }
+
+    /* Card animation on load */
+    .card-enter {
+      animation: slideUp 0.6s ease-out forwards;
+    }
+
+    /* Improved input transitions */
+    .form-input {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .form-input:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(34, 57, 90, 0.1);
+    }
+
+    /* Button hover effects with secondary color */
+    .btn-primary:hover {
+      background: linear-gradient(to right, #466ab3, #22395a);
+    }
+  </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+  <div class="fixed inset-0 z-[-1] overflow-hidden">
+    <video autoplay loop muted playsinline class="w-full h-full object-cover animate-fadeIn opacity-15"
+      poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiB2aWV3Qm94PSIwIDAgMTkyMCAxMDgwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTkyMCIgaGVpZ2h0PSIxMDgwIiBmaWxsPSIjZjBmMmY1Ii8+Cjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMjIzOTVhIiBmb250LWZhbWlseT0iSW50ZXIiIGZvbnQtc2l6ZT0iMjQiPmxvYWRpbmcgYmFja2dyb3VuZCA8L3RleHQ+Cjwvc3ZnPg==">
+      <source src="https://videos.pexels.com/video-files/5549010/5549010-hd_1920_1080_25fps.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+    <div
+      class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 dark:from-primary/10 dark:to-accent/10">
+    </div>
+    <div
+      class="hidden w-full h-full bg-gradient-to-br from-primary/5 to-background-light dark:from-primary/10 dark:to-background-dark absolute inset-0">
+    </div>
+  </div>
+
+  <main class="flex items-center justify-center min-h-screen p-4 sm:p-6">
+    <div
+      class="w-full max-w-md bg-card-light/90 dark:bg-card-dark/80 backdrop-blur-md rounded-2xl shadow-soft-glow dark:shadow-soft-glow-dark p-8 space-y-6 border border-gray-200/30 dark:border-gray-700/50 card-enter">
+      <div class="text-center space-y-3">
+        <div
+          class="mx-auto w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center shadow-lg">
+          <span class="text-white text-3xl font-bold">C</span> </div>
+        <h2 class="text-3xl font-bold text-primary dark:text-white">Welcome Back</h2>
+        <p class="text-sm text-gray dark:text-gray-300">Log in to manage your barbershop with ease.</p>
+      </div>
+
+      <form id="authForm" class="space-y-6" novalidate>
+        <div>
+          <label for="email" class="block text-sm font-semibold text-gray mb-2">Email Address</label>
+          <input id="email" name="email" type="email" required autocomplete="email" placeholder="Enter your email"
+            class="form-input w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50 focus:ring-accent focus:border-accent placeholder-gray-light dark:placeholder-gray-400 text-gray-900 dark:text-white"
+            aria-describedby="email-error" />
+          <p id="email-error" class="mt-1 text-sm text-danger hidden">Please enter a valid email address.</p>
+        </div>
+
+        <div class="relative">
+          <label for="password" class="block text-sm font-semibold text-gray mb-2">Password</label>
+          <input id="password" name="password" type="password" required autocomplete="current-password" minlength="6"
+            placeholder="Enter your password"
+            class="form-input w-full px-4 py-3 pr-12 rounded-xl bg-white/50 dark:bg-gray-800/50 border border-gray-300/30 dark:border-gray-600/50 focus:ring-accent focus:border-accent placeholder-gray-light dark:placeholder-gray-400 text-gray-900 dark:text-white"
+            aria-describedby="password-error" />
+          <button type="button" id="togglePassword"
+            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray dark:text-gray-400 hover:text-secondary transition-colors"
+            aria-label="Toggle password visibility">
+            <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <svg id="eyeSlashIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+            </svg>
+          </button>
+          <p id="password-error" class="mt-1 text-sm text-danger hidden">Password must be at least 6 characters long.
+          </p>
+        </div>
+
+        <div class="text-right">
+          <a href="#" class="text-sm text-accent hover:text-secondary font-medium transition-colors duration-200">Forgot
+            password?</a>
+        </div>
+
+        <div>
+          <button type="submit" id="submitBtn"
+            class="btn-primary w-full py-3 px-4 rounded-xl shadow-soft-glow text-sm font-semibold text-white bg-gradient-to-r from-primary to-secondary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-all duration-300 flex items-center justify-center gap-2 transform hover:scale-[1.02] active:scale-[0.98]">
+            <span id="btnText">Log in / Sign up</span>
+            <div id="loadingSpinner" class="loading-spinner hidden"></div>
+          </button>
+        </div>
+      </form>
+
+      <div id="authMessage" class="text-center text-sm transition-all duration-300" role="alert" aria-live="polite">
+        <div id="messageIcon" class="mx-auto w-5 h-5 hidden mb-1"></div>
+      </div>
+
+      <div class="text-center pt-4 border-t border-gray-200/30 dark:border-gray-700/50">
+        <p class="text-sm text-gray dark:text-gray-400">
+          Don't have an account?
+          <a href="#" class="text-accent hover:text-secondary font-semibold transition-colors">Sign up!!</a>
+        </p>
+      </div>
+    </div>
+
+    <div class="absolute bottom-6 right-6">
+      <a href="index.html"
+        class="group inline-flex items-center gap-2 px-5 py-2 rounded-full border border-gray-600 text-gray-300 font-medium bg-gray-900 shadow-md
+               hover:bg-primary hover:text-white transition-all duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary/60"
+        aria-label="Back to Home">
+
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 stroke-current group-hover:-translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+
+        <span>Back to Home</span>
+      </a>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    import { firebaseConfig } from "./firebase-config.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const form = document.getElementById("authForm");
+    const message = document.getElementById("authMessage");
+    const messageIcon = document.getElementById("messageIcon");
+    const submitBtn = document.getElementById("submitBtn");
+    const btnText = document.getElementById("btnText");
+    const loadingSpinner = document.getElementById("loadingSpinner");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const togglePasswordBtn = document.getElementById("togglePassword");
+    const eyeIcon = document.getElementById("eyeIcon");
+    const eyeSlashIcon = document.getElementById("eyeSlashIcon");
+    const emailError = document.getElementById("email-error");
+    const passwordError = document.getElementById("password-error");
+
+    // Enhanced Message Function with Icons, Auto-Hide, and Color Integration
+    // NOTE: Simplified the SVG for the error icon for brevity in JS.
+    const showMessage = (text, type = "error") => {
+      message.textContent = text;
+      messageIcon.innerHTML = ""; // Clear previous icon
+      messageIcon.classList.remove("hidden");
+      message.className = `text-center text-sm transition-all duration-300 ${type === "error" ? "text-danger" : "text-success"}`;
+
+      if (type === "error") {
+        messageIcon.innerHTML = '<svg class="mx-auto w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>';
+      } else {
+        messageIcon.innerHTML = '<svg class="mx-auto w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>';
+      }
+    };
+
+    // Corrected Password Visibility Toggle
+    togglePasswordBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.getAttribute("type") === "password";
+      passwordInput.setAttribute("type", isPassword ? "text" : "password");
+
+      if (isPassword) {
+        // Switch from password (slashed eye) to text (open eye)
+        eyeSlashIcon.classList.add("hidden");
+        eyeIcon.classList.remove("hidden");
+      } else {
+        // Switch from text (open eye) to password (slashed eye)
+        eyeSlashIcon.classList.remove("hidden");
+        eyeIcon.classList.add("hidden");
+      }
+    });
+
+    // Client-side Validation Functions (moved for scope access)
+    const validateEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
+    const validateForm = () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      emailError.classList.add("hidden");
+      passwordError.classList.add("hidden");
+
+      let isValid = true;
+
+      if (!email) {
+        emailError.textContent = "Email is required.";
+        emailError.classList.remove("hidden");
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        emailError.textContent = "Please enter a valid email address.";
+        emailError.classList.remove("hidden");
+        isValid = false;
+      }
+
+      if (!password) {
+        passwordError.textContent = "Password is required.";
+        passwordError.classList.remove("hidden");
+        isValid = false;
+      } else if (password.length < 6) {
+        passwordError.textContent = "Password must be at least 6 characters long.";
+        passwordError.classList.remove("hidden");
+        isValid = false;
+      }
+      return isValid;
+    };
+
+    // Utility function to manage loading state
+    const setAuthState = (isLoading) => {
+      submitBtn.disabled = isLoading;
+      if (isLoading) {
+        btnText.textContent = "Processing...";
+        loadingSpinner.classList.remove("hidden");
+        submitBtn.classList.add("opacity-70", "cursor-not-allowed");
+      } else {
+        btnText.textContent = "Log in / Sign up";
+        loadingSpinner.classList.add("hidden");
+        submitBtn.classList.remove("opacity-70", "cursor-not-allowed");
+      }
+    };
+
+
+    // Corrected Auth Submission Handler
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "";
+      messageIcon.classList.add("hidden");
+
+      if (!validateForm()) {
+        showMessage("Please correct the errors above.", "error");
+        return;
+      }
+
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+
+      setAuthState(true);
+
+      try {
+        let userCred;
+        try {
+          // 1. Try to sign in
+          userCred = await signInWithEmailAndPassword(auth, email, password);
+        } catch (signInError) {
+          if (signInError.code === 'auth/user-not-found' || signInError.code === 'auth/invalid-credential') {
+            // 2. If user not found, try to create account
+            userCred = await createUserWithEmailAndPassword(auth, email, password);
+          } else {
+            // Re-throw other sign-in errors
+            throw signInError;
+          }
+        }
+
+        const uid = userCred.user.uid;
+        const ownerDoc = await getDoc(doc(db, "owners", uid));
+        setAuthState(false);
+        showMessage("Success! Redirecting...", "success");
+
+        if (ownerDoc.exists()) {
+          window.location.href = "owner.html";
+        } else {
+          window.location.href = "setup.html";
+        }
+      } catch (err) {
+        setAuthState(false);
+        // Firebase Auth error handling
+        let friendlyMessage = "An unknown error occurred.";
+        if (err.message && err.message.includes('auth/')) {
+            // Simple mapping for common errors
+            if (err.code === 'auth/wrong-password') {
+                friendlyMessage = 'Invalid password.';
+            } else if (err.code === 'auth/invalid-email') {
+                friendlyMessage = 'Invalid email format.';
+            } else {
+                friendlyMessage = err.message.replace('Firebase: Error ', '').replace(/\(auth\/[a-z-]+\)/, '').trim();
+            }
+        } else {
+            friendlyMessage = err.message;
+        }
+        showMessage(friendlyMessage, "error");
+      }
+    });
+  </script>
+</body>
+
+</html>

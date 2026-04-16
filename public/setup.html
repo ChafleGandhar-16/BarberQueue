@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Setup Your Shop - Barber Queue</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/CDQ6P2yS/h+8bRd+3N+Q4vYqO8V7z6Q/pXF5b/2wF5d1P5+4L7C1T7k1P4Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        :root {
+            /* Professional blue-cyan theme from reference */
+            --color-primary: #22395a;  /* Deep Blue */
+            --color-secondary: #466ab3; /* Medium Blue */
+            --color-accent:  #14b7cc;  /* Cyan */
+            --color-success: #29c785;  /* Green */
+            --color-danger: #e74c3c;    /* Red for errors/sign out */
+            --color-text:    #333;      /* Primary text */
+            --color-muted:   #64748b;  /* Neutral gray (Updated for better contrast) */
+            --color-white:   #ffffff;  /* White */
+            --color-bg:      #f0f2f5;  /* Soft light background */
+            --color-input-bg: #f8fafc; /* Lighter background for inputs */
+
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --radius-sm: 10px;
+
+            --shadow-sm: 0 1px 2px rgba(34, 57, 90, 0.06);
+            --shadow-md: 0 4px 12px rgba(34, 57, 90, 0.08);
+            --shadow-lg: 0 10px 24px rgba(20, 183, 204, 0.15);
+            --border: #e2e8f0; /* Lighter border for inputs */
+        }
+
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: Playfair Display, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+            color: var(--color-text);
+            background: linear-gradient(135deg, var(--color-bg) 0%, #e0f2fe 100%); 
+            line-height: 1.55;
+            min-height: 100vh;
+        }
+
+        .page {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+        }
+        
+        .setup-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* --- Header Styles --- */
+        header.header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 24px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+            color: var(--color-white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            animation: fadeDown 0.6s ease-out;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 1;
+        }
+        
+        /* BQ Brand Badge Styling */
+        .brand-badge {
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--color-white);
+            color: var(--color-primary);
+            font-weight: 700;
+            font-size: 20px;
+            display: grid; place-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .brand-title {
+            font-family: Poppins, Inter, sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        /* Sign Out Button - Hover Effect */
+        .btn-signout {
+            background: linear-gradient(135deg, var(--color-danger), #c0392b);
+            color: var(--color-white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-signout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+        }
+        
+        .btn-signout:active {
+            transform: translateY(0);
+        }
+
+        /* --- Panel & Form Styles --- */
+        .panel {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            background: var(--color-white);
+            box-shadow: var(--shadow-md);
+            animation: fadeUp 0.6s ease-out 0.4s both;
+            width: 100%;
+        }
+        
+        .panel-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .panel-title {
+            font-family: Poppins, Inter, sans-serif;
+            color: var(--color-primary);
+            text-align: center;
+        }
+        
+        .panel-body {
+            padding: 25px 20px;
+        }
+
+        form .grid {
+            display: grid;
+            gap: 14px;
+        }
+        
+        @media (min-width: 640px) {
+            form .grid-2 { grid-template-columns: 1fr 1fr; }
+        }
+        
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 6px;
+            display: inline-block;
+            color: var(--color-primary);
+        }
+        
+        input[type="text"], select, input[type="time"], input[type="number"] {
+            width: 100%;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 11px 14px;
+            font-size: 14px;
+            background: var(--color-input-bg);
+            transition: all 0.2s ease;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 4px rgba(20, 183, 204, 0.1);
+            transform: translateY(0);
+        }
+
+        .helper {
+            color: var(--color-muted);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* --- Open Days Checkboxes --- */
+        .day-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .day-label-group {
+            position: relative;
+        }
+
+        .day-check {
+            position: absolute;
+            opacity: 0;
+            height: 0;
+            width: 0;
+        }
+
+        .day-label {
+            display: block;
+            text-align: center;
+            padding: 10px 5px;
+            background: var(--color-input-bg);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-muted);
+        }
+
+        .day-check:checked + .day-label {
+            background: linear-gradient(135deg, var(--color-accent), var(--color-secondary));
+            color: var(--color-white);
+            border-color: var(--color-accent);
+            box-shadow: 0 2px 6px rgba(20, 183, 204, 0.3);
+        }
+
+        .day-label:hover {
+            border-color: var(--color-accent);
+        }
+
+        /* --- Services Section --- */
+        .service-row {
+            display: grid;
+            grid-template-columns: 1fr 120px auto;
+            gap: 10px;
+            margin-top: 10px;
+            align-items: center;
+        }
+        
+        /* Changed "Remove Service" button to "Cancel" style and function */
+        .remove-service {
+            background: var(--color-danger); /* Use red for removal */
+            color: var(--color-white);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+            display: grid;
+            place-items: center;
+        }
+
+        .remove-service:hover {
+            background: #c0392b; /* Darker red on hover */
+            transform: scale(1.05);
+        }
+
+        .add-service-btn {
+            background: linear-gradient(135deg, var(--color-secondary), var(--color-accent));
+            color: var(--color-white);
+            border: none;
+            padding: 10px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+        
+        .add-service-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* --- Actions/Submit Button --- */
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: var(--color-white);
+            font-weight: 700;
+            padding: 12px 24px;
+            border: 0;
+            border-radius: var(--radius-sm);
+            min-width: 220px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(34, 57, 90, 0.3);
+            position: relative; /* Needed for hover shine effect */
+            overflow: hidden;
+        }
+
+        /* Added Primary Button Shine Effect */
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(34, 57, 90, 0.4);
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        
+        /* --- Message (removed from HTML, but keeping styles in case of re-addition) --- */
+        .message {
+            margin-top: 15px;
+            padding: 14px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            text-align: center;
+            display: none; /* Ensure it's hidden by default if present */
+        }
+        
+        .message.error {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--color-danger);
+            border: 1px solid var(--color-danger);
+            /* display: block; -- This would be added by JS when an error occurs */
+        }
+        
+        .message.success {
+            background: rgba(41, 199, 133, 0.1);
+            color: var(--color-success);
+            border: 1px solid var(--color-success);
+            /* display: block; -- This would be added by JS when a success occurs */
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-4px); }
+        }
+
+
+        /* --- Responsive Adjustments --- */
+        @media (max-width: 640px) {
+            .header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .header-actions {
+                margin-top: 15px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .service-row {
+                grid-template-columns: 1fr 1fr;
+            }
+            .remove-service {
+                grid-column: 2 / 3;
+                justify-self: end;
+                align-self: center;
+                margin-top: 0;
+            }
+            .service-row input:nth-child(2) {
+                grid-row: 2;
+                grid-column: 1 / 3;
+            }
+            .btn-primary {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <div class="setup-container">
+        <header class="header">
+            <div class="brand">
+                <div class="brand-badge">BQ</div>
+                <div>
+                    <div class="brand-title">BarberQueue Setup</div>
+                    <div class="brand-subtitle">One-time configuration for your shop.</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-signout" id="signOutBtn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                </button>
+            </div>
+        </header>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">Your Shop Details</div>
+                <p class="panel-desc">Complete the form below to activate your shop and queue system.</p>
+            </div>
+            <div class="panel-body">
+                <form id="setupShopForm">
+                    <div class="grid">
+                        <div class="grid grid-2">
+                            <div>
+                                <label for="shopName"><i class="fa-solid fa-shop" style="margin-right: 5px;"></i> Shop Name</label>
+                                <input type="text" id="shopName" placeholder="e.g., The Classic Cut" required>
+                            </div>
+                            <div>
+                                <label for="city"><i class="fa-solid fa-location-dot" style="margin-right: 5px;"></i> City / Location Identifier</label>
+                                <select id="city" required>
+                                    <option value="">Select City</option>
+                                    <option value="Ahmednagar">Ahmednagar</option>
+                                    <option value="Akola">Akola</option>
+                                    <option value="Amravati">Amravati</option>
+                                    <option value="Aurangabad">Aurangabad</option>
+                                    <option value="Beed">Beed</option>
+                                    <option value="Bhandara">Bhandara</option>
+                                    <option value="Buldhana">Buldhana</option>
+                                    <option value="Chandrapur">Chandrapur</option>
+                                    <option value="Dhule">Dhule</option>
+                                    <option value="Gadchiroli">Gadchiroli</option>
+                                    <option value="Gondia">Gondia</option>
+                                    <option value="Hingoli">Hingoli</option>
+                                    <option value="Jalgaon">Jalgaon</option>
+                                    <option value="Jalna">Jalna</option>
+                                    <option value="Kolhapur">Kolhapur</option>
+                                    <option value="Latur">Latur</option>
+                                    <option value="Mumbai City">Mumbai City</option>
+                                    <option value="Mumbai Suburban">Mumbai Suburban</option>
+                                    <option value="Nagpur">Nagpur</option>
+                                    <option value="Nanded">Nanded</option>
+                                    <option value="Nandurbar">Nandurbar</option>
+                                    <option value="Nashik">Nashik</option>
+                                    <option value="Osmanabad">Osmanabad</option>
+                                    <option value="Palghar">Palghar</option>
+                                    <option value="Parbhani">Parbhani</option>
+                                    <option value="Pune">Pune</option>
+                                    <option value="Raigad">Raigad</option>
+                                    <option value="Ratnagiri">Ratnagiri</option>
+                                    <option value="Sangli">Sangli</option>
+                                    <option value="Satara">Satara</option>
+                                    <option value="Sindhudurg">Sindhudurg</option>
+                                    <option value="Solapur">Solapur</option>
+                                    <option value="Thane">Thane</option>
+                                    <option value="Wardha">Wardha</option>
+                                    <option value="Washim">Washim</option>
+                                    <option value="Yavatmal">Yavatmal</option>
+                                </select>
+                                <div class="helper">This helps customers find you.</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 14px;" class="grid grid-2">
+                            <div>
+                                <label for="openTime"><i class="fa-regular fa-clock" style="margin-right: 5px;"></i> Opening Time</label>
+                                <input type="time" id="openTime" value="09:00" required>
+                            </div>
+                            <div>
+                                <label for="closeTime"><i class="fa-solid fa-clock-rotate-left" style="margin-right: 5px;"></i> Closing Time</label>
+                                <input type="time" id="closeTime" value="17:00" required>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 14px;">
+                            <label><i class="fa-solid fa-calendar-day" style="margin-right: 5px;"></i> Open Days (Select all that apply)</label>
+                            <div class="day-checkboxes">
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Mon" class="day-check" id="day-mon" />
+                                    <label for="day-mon" class="day-label">Mon</label>
+                                </div>
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Tue" class="day-check" id="day-tue" />
+                                    <label for="day-tue" class="day-label">Tue</label>
+                                </div>
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Wed" class="day-check" id="day-wed" />
+                                    <label for="day-wed" class="day-label">Wed</label>
+                                </div>
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Thu" class="day-check" id="day-thu" />
+                                    <label for="day-thu" class="day-label">Thu</label>
+                                </div>
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Fri" class="day-check" id="day-fri" />
+                                    <label for="day-fri" class="day-label">Fri</label>
+                                </div>
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Sat" class="day-check" id="day-sat" />
+                                    <label for="day-sat" class="day-label">Sat</label>
+                                </div>
+                                <div class="day-label-group">
+                                    <input type="checkbox" value="Sun" class="day-check" id="day-sun" />
+                                    <label for="day-sun" class="day-label">Sun</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 14px;">
+                            <label><i class="fa-solid fa-scissors" style="margin-right: 5px;"></i> Services & Duration (min)</label>
+                            <div id="servicesContainer" class="services-section">
+                            </div>
+                            <button type="button" id="addServiceBtn" class="add-service-btn">
+                                <i class="fa-solid fa-plus"></i> Add Service
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="submit" class="btn-primary" id="saveSetupBtn">
+                            <i class="fa-solid fa-circle-check"></i> Save & Go to Dashboard
+                        </button>
+                    </div>
+                </form>
+
+                </div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    // Firebase Imports and Configuration
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+    // REPLACE with your actual Firebase configuration
+    import { firebaseConfig } from "./firebase-config.js";
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM Elements
+    const setupForm = document.getElementById("setupShopForm");
+    const servicesContainer = document.getElementById("servicesContainer");
+    const addServiceBtn = document.getElementById("addServiceBtn");
+    // const statusMessage = document.getElementById("statusMessage"); // Removed since the element is gone
+    const signOutBtn = document.getElementById("signOutBtn");
+    
+    let ownerId = null;
+
+    // --- Utility Functions ---
+
+    // Since the statusMessage div is removed, this function will no longer have an effect.
+    // If you plan to re-add status messages in a different way, this function would need adjustment.
+    function showMessage(text, type) {
+        console.warn(`Attempted to show message: "${text}" with type "${type}". The status message display element has been removed.`);
+        // You could, for example, implement an alert or a temporary on-screen notification here.
+        // For now, it will just log to the console.
+    }
+
+    function removeServiceRow(row) {
+        // Ensure at least one service row remains
+        if (servicesContainer.querySelectorAll('.service-row').length > 1) {
+            row.remove();
+        } else {
+            showMessage("You must have at least one service defined.", "error");
+        }
+    }
+
+    function addServiceRow(name = '', duration = '') {
+        const row = document.createElement("div");
+        row.className = "service-row";
+        row.innerHTML = `
+            <input type="text" class="service-name" value="${name}" placeholder="Service Name (e.g., Haircut)" required>
+            <input type="number" class="service-duration" value="${duration}" placeholder="Duration (min)" min="1" required>
+            <button type="button" class="remove-service" aria-label="Remove service">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        `;
+        servicesContainer.appendChild(row);
+
+        // Add remove button listener
+        row.querySelector(".remove-service").addEventListener("click", () => {
+            removeServiceRow(row);
+        });
+    }
+
+    // --- Core Logic ---
+
+    // Authentication Check
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = "auth.html"; // Redirect to login
+            return;
+        }
+        ownerId = user.uid;
+
+        // Check if shop is already set up
+        const shopDoc = await getDoc(doc(db, "owners", ownerId));
+        if (shopDoc.exists()) {
+            window.location.href = "owner.html"; // Redirect to dashboard
+            return;
+        }
+        
+        // Ensure at least one service row exists on load
+        if (servicesContainer.children.length === 0) {
+            addServiceRow();
+        }
+    });
+
+    // Sign Out Handler
+    signOutBtn.addEventListener("click", async () => {
+        await signOut(auth);
+        window.location.href = "auth.html";
+    });
+
+    // Handle Add Service Button
+    addServiceBtn.addEventListener("click", () => {
+        addServiceRow();
+    });
+
+    // Form Submission Handler
+    setupForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        // statusMessage.style.display = 'none'; // This line now refers to a removed element
+        
+        if (!ownerId) {
+            showMessage("System error: Owner ID not found. Please sign out and sign in again.", "error");
+            return;
+        }
+
+        const shopName = document.getElementById("shopName").value.trim();
+        const city = document.getElementById("city").value;
+        const openTime = document.getElementById("openTime").value;
+        const closeTime = document.getElementById("closeTime").value;
+        const openDays = Array.from(document.querySelectorAll('.day-check:checked')).map(cb => cb.value); 
+
+        const services = {};
+        const serviceRows = servicesContainer.querySelectorAll(".service-row");
+        let hasServiceError = false;
+
+        serviceRows.forEach(row => {
+            const nameInput = row.querySelector(".service-name");
+            const durationInput = row.querySelector(".service-duration");
+            
+            const name = nameInput.value.trim();
+            const duration = parseInt(durationInput.value);
+
+            if (name && duration > 0) {
+                if (services[name]) {
+                    showMessage("Error: Duplicate service names found.", "error");
+                    hasServiceError = true;
+                }
+                services[name] = duration;
+            } else if (name || durationInput.value) {
+                showMessage("Error: All service fields must have a name and a duration greater than 0.", "error");
+                hasServiceError = true;
+            }
+        });
+        
+        if (hasServiceError) return;
+        if (city === "") {
+            showMessage("Error: Please select your shop's city.", "error");
+            return;
+        }
+        if (Object.keys(services).length === 0) {
+            showMessage("Error: You must add at least one valid service.", "error");
+            return;
+        }
+        if (openDays.length === 0) {
+            showMessage("Error: Please select at least one open day.", "error");
+            return;
+        }
+
+        try {
+            const shopData = {
+                shopName: shopName,
+                city: city, 
+                openTime: openTime,
+                closeTime: closeTime,
+                openDays: openDays,
+                services: services, 
+                acceptingCustomers: true, 
+                createdAt: new Date(),
+                ownerId: ownerId
+            };
+
+            await setDoc(doc(db, "owners", ownerId), shopData);
+
+            showMessage("Shop setup complete! Redirecting to dashboard...", "success");
+            setTimeout(() => {
+                window.location.href = "owner.html";
+            }, 1000);
+
+        } catch (error) {
+            console.error("Error setting up shop:", error);
+            showMessage("Failed to save shop settings: " + error.message, "error");
+        }
+    });
+
+</script>
+
+</body>
+</html>
