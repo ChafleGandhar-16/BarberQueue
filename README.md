@@ -1,4 +1,9 @@
+
+
+
 # BarberQueue ✂️
+
+🚀 **Live App:** https://barberqueue-sys.web.app
 
 **BarberQueue** is a modern, real-time smart queue management system designed to streamline barbershop operations. It eliminates long physical waiting times by allowing customers to discover nearby shops, join virtual queues, and get accurate ETAs before they even arrive. Shop owners benefit from an intuitive dashboard to manage services, track customers, and optimize their daily workflow.
 
