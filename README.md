@@ -46,7 +46,7 @@ Want to run BarberQueue locally or contribute? Follow these steps!
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/BarberQueue.git
+git clone https://github.com/ChafleGandhar-16/BarberQueue.git
 cd BarberQueue
 ```
 
